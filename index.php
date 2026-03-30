@@ -344,7 +344,7 @@ $books = $bookModel->getAll();
                 </div>
             <?php else: ?>
                 <?php foreach ($books as $book): ?>
-                    <?php $author=$authorModel->getAuthorById($book['author_id'])['data'][0];;?>
+                    <?php $author=$authorModel->getAuthorById($book['author_id'])['data'][0];?>
                     <div class="book-card" data-title="<?= htmlspecialchars($book['title']) ?>">
                         <div class="book-image">
                             <span class="book-category">

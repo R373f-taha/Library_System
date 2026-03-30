@@ -44,7 +44,7 @@ public function getAll(){
 
      $result=$this->connect->delete('books',$id);
 
-     return ['result'=>$result['message']];
+     return ['success'=>$result['success'],'message'=>$result['message']];
  
       
    }
