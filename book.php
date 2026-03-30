@@ -35,7 +35,7 @@ public function getAll(){
 
      $result=$this->connect->update('books',$data,$id);
 
-     return ['result'=>$result['message']];
+     return ['success'=>$result['message']];
  
       
    }
@@ -53,8 +53,13 @@ public function getAll(){
    public function getBookById(int $id){
 
     $result=$this->connect->getById('books',$id);
+    
+    if($result['success'])
 
-     return ['result'=>$result['message']];
+     return ['success'=>true,'data'=>$result['data']];
+
+    else
+       return ['success'=>false];
  
    }
 

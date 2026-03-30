@@ -56,4 +56,17 @@ class author{
 
    }
 
+    public function getAuthorById(int $id){
+
+    $result=$this->connect->getById('authors',$id);
+    
+    if($result['success'])
+
+     return ['success'=>true,'data'=>$result['data']];
+
+    else
+       return ['success'=>false];
+ 
+   }
+
 }

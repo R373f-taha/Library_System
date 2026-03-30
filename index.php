@@ -1,8 +1,9 @@
 <?php
 // index.php - صفحة عرض الكتب
 require_once 'book.php';
-
+require_once 'author.php';
 $bookModel = new Book();
+$authorModel=new author();
 
 $books = $bookModel->getAll();
 ?>
@@ -343,6 +344,7 @@ $books = $bookModel->getAll();
                 </div>
             <?php else: ?>
                 <?php foreach ($books as $book): ?>
+                    <?php $author=$authorModel->getAuthorById($book['author_id'])['data'][0];;?>
                     <div class="book-card" data-title="<?= htmlspecialchars($book['title']) ?>">
                         <div class="book-image">
                             <span class="book-category">
@@ -357,7 +359,7 @@ $books = $bookModel->getAll();
                             <div class="book-title"><?= htmlspecialchars($book['title']) ?></div>
                             <div class="book-author">
                                 <i class="fas fa-user-pen"></i>
-                                <?= htmlspecialchars($book['author_name'] ?? 'مؤلف غير معروف') ?>
+                                <?= htmlspecialchars(empty($book['author_id']) ? 'مؤلف غير معروف':$author['first_name'].' '.$author['last_name']) ?>
                             </div>
                             <div class="book-year">
                                 <i class="fas fa-calendar-alt"></i>

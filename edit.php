@@ -1,7 +1,47 @@
 <?php
 
+require_once 'book.php';
+require_once 'author.php';
+require_once 'category.php';
+
 $error='';
 $message='';
+
+$id=isset($_GET['id'])?(int) $_GET['id']:0;
+$bookObject=new Book();
+$bookData=$bookObject->getBookById($id);
+if (!$bookData['success'] || empty($bookData['data'])) {
+    header('Location: index.php?error=not_found');
+    exit;
+}
+$book= $bookData['data'][0];
+$author=new author();
+$authors=$author->getAll();
+$category=new category();
+$categories=$category->getAll();
+//print_r($book['title']);
+$theAuthor=$author->getAuthorById($book['author_id'])['data'][0];
+
+if($_SERVER['REQUEST_METHOD'] === 'POST'){
+
+$data=[
+    'title'=>htmlspecialchars($_POST['title'])??$book['title'],
+     'author_id'=>($_POST['author_id']),
+    'category_id'=>htmlspecialchars($_POST['category_id'])?? $book['category_id'],
+    'publish_year'=> $_POST['publish_year'],
+     'image'=>htmlspecialchars($_POST['image'])??$book['image']
+
+];
+
+$result=$bookObject->update($data,$id);
+if(!$result['success']){
+    echo 'something wrong';
+}
+else{
+header('Location:index.php');
+exit();
+}
+}
 
 
 ?>
@@ -192,9 +232,14 @@ $message='';
                     <input type="text" name="title" required value="<?= htmlspecialchars($book['title'] ?? '') ?>">
                 </div>
                 
-                <div class="form-group">
-                    <label><i class="fas fa-user"></i> اسم المؤلف</label>
-                    <input type="text" name="author_name" required value="<?= htmlspecialchars($book['author_name'] ?? '') ?>">
+               <div class="form-group">
+                    <label><i class="fas fa-tag"></i>  اسم المؤلف </label>
+                    <select name="author_id" required>
+                      
+                        <?php foreach ($authors as $author): ?>
+                            <option value="<?= $author['id'] ?>"><?= htmlspecialchars($author['first_name'].' '.$author['last_name']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
                 
                 <div class="form-group">
@@ -216,7 +261,7 @@ $message='';
                 
                 <div class="form-group">
                     <label><i class="fas fa-image"></i> رابط الصورة</label>
-                    <input type="url" name="image" value="<?= htmlspecialchars($book['image'] ?? '') ?>">
+                    <input type="text" name="image" value="<?= htmlspecialchars($book['image'] ?? '') ?>">
                 </div>
                 
                 <div class="btn-group">
