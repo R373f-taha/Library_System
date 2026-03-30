@@ -24,12 +24,35 @@ $theAuthor=$author->getAuthorById($book['author_id'])['data'][0];
 
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
+$imagePath=$book['image'];
+
+if(isset($_FILES['image']) && $_FILES['image']['error']==UPLOAD_ERR_OK){
+
+if(!empty($book['image']) && file_exists($book['images'])){
+    if(unlink($book['image'])){}
+}
+
+
+
+$imageExtention=pathinfo($_FILES['image']['name'],PATHINFO_EXTENSION);
+
+$imageName=time().'_'.rand(1,100).'.'.$imageExtention;
+
+$imageTmpName=$_FILES['image']['tmp_name'];
+
+$destination='images/'.$imageName;
+
+if(move_uploaded_file($imageTmpName,$destination)){
+
+$imagePath=$destination;
+}
+}
 $data=[
     'title'=>htmlspecialchars($_POST['title'])??$book['title'],
      'author_id'=>($_POST['author_id']),
-    'category_id'=>htmlspecialchars($_POST['category_id'])?? $book['category_id'],
+    'category_id'=>(int)($_POST['category_id'])?? $book['category_id'],
     'publish_year'=> $_POST['publish_year'],
-     'image'=>htmlspecialchars($_POST['image'])??$book['image']
+     'image'=>$imagePath
 
 ];
 
@@ -226,7 +249,7 @@ exit();
                 </div>
             <?php endif; ?>
             
-            <form method="POST" action="">
+            <form method="POST" action="" enctype="multipart/form-data">
                 <div class="form-group">
                     <label><i class="fas fa-heading"></i> عنوان الكتاب</label>
                     <input type="text" name="title" required value="<?= htmlspecialchars($book['title'] ?? '') ?>">
@@ -261,7 +284,7 @@ exit();
                 
                 <div class="form-group">
                     <label><i class="fas fa-image"></i> رابط الصورة</label>
-                    <input type="text" name="image" value="<?= htmlspecialchars($book['image'] ?? '') ?>">
+                    <input type="file" name="image" value="<?= htmlspecialchars($book['image'] ?? '') ?>">
                 </div>
                 
                 <div class="btn-group">
