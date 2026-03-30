@@ -18,7 +18,7 @@ public function getAll(){
 
    if(!$result['success'])
     
-     return ['result'=>$result['message']];
+     return [];
 
    else return $result['data'];
 
@@ -41,7 +41,12 @@ public function getAll(){
    }
 
     public function delete(int $id){
+     
+    $book=$this->getBookById($id)['data'][0];
 
+    if(!empty($book['image']) && file_exists('images')){
+      if(unlink($book['image'])){}
+    }
      $result=$this->connect->delete('books',$id);
 
      return ['success'=>$result['success'],'message'=>$result['message']];

@@ -6,6 +6,13 @@ $bookModel = new Book();
 $authorModel=new author();
 
 $books = $bookModel->getAll();
+$allAuthors=$authorModel->getAll();
+$allAuthorsNames=[];
+
+foreach($allAuthors as $author){
+
+    $allAuthorsNames[$author['id']]=$author['first_name'].' '.$author['last_name'];
+}
 ?>
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
@@ -336,7 +343,7 @@ $books = $bookModel->getAll();
         </div>
 
         <div class="books-grid" id="booksGrid">
-            <?php if (empty($books) || (isset($books['result']) && $books['result'] === 'No books found')): ?>
+            <?php if (empty($books)): ?>
                 <div class="no-books">
                     <i class="fas fa-book"></i>
                     <h3>لا توجد كتب حالياً</h3>
@@ -344,22 +351,27 @@ $books = $bookModel->getAll();
                 </div>
             <?php else: ?>
                 <?php foreach ($books as $book): ?>
-                    <?php $author=$authorModel->getAuthorById($book['author_id'])['data'][0];?>
+                    
                     <div class="book-card" data-title="<?= htmlspecialchars($book['title']) ?>">
                         <div class="book-image">
                             <span class="book-category">
                                 <i class="fas fa-tag"></i>
                                 <?= htmlspecialchars($book['category_name'] ?? 'عام') ?>
                             </span>
-                            <img src="<?= htmlspecialchars($book['image'] ?? 'https://picsum.photos/id/24/300/280') ?>" 
+                            <img src="<?= htmlspecialchars($book['image'] ?? '') ?>" 
                                  alt="<?= htmlspecialchars($book['title']) ?>"
-                                 onerror="this.src='https://picsum.photos/id/24/300/280'">
+                                ">
                         </div>
                         <div class="book-info">
                             <div class="book-title"><?= htmlspecialchars($book['title']) ?></div>
                             <div class="book-author">
                                 <i class="fas fa-user-pen"></i>
-                                <?= htmlspecialchars(empty($book['author_id']) ? 'مؤلف غير معروف':$author['first_name'].' '.$author['last_name']) ?>
+                                <?php $authorDisplay = 'مؤلف غير معروف';
+                                    if (!empty($book['author_id']) && isset($allAuthorsNames[$book['author_id']])) {
+                                        $authorDisplay = $allAuthorsNames[$book['author_id']];
+                                    }
+                                    echo htmlspecialchars($authorDisplay);?>
+                                                               
                             </div>
                             <div class="book-year">
                                 <i class="fas fa-calendar-alt"></i>

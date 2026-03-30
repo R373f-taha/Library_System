@@ -10,12 +10,36 @@ $book=new Book();
 $error='';
 $message='';
 if($_SERVER['REQUEST_METHOD']==='POST'){
+
+if(isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK){
+
+$uploadDir='images/';
+
+if(!file_exists($uploadDir))
+
+    mkdir($uploadDir,0777,true);
+
+$fileExtention=pathinfo($_FILES['image']['name'],PATHINFO_EXTENSION);
+$imageName=time().'_'.rand(1,100).$fileExtention;
+$imageTmpName=$_FILES['image']['tmp_name'];
+$destination=$uploadDir.$imageName;
+
+$imagePath='';
+if(move_uploaded_file($imageTmpName,$destination)){
+var_dump('successfully uploaded');
+$imagePath=$destination;}
+
+
+else var_dump('failed uploaded');
+
+}
+
 $data=[
 'title'=>htmlspecialchars($_POST['title'])??'',
-'author_id'=>htmlspecialchars($_POST['author_id'])??'',
-'category_id'=>htmlspecialchars($_POST['category_id'])??'',
-'publish_year'=>htmlspecialchars('publish_year')??'',
-'image'=>htmlspecialchars('image')??''
+'author_id'=>(int)($_POST['author_id'])??0,
+'category_id'=>(int)($_POST['category_id'])??0,
+'publish_year'=>$_POST['publish_year']??'',
+'image'=>$imagePath
 
 
 ];
@@ -209,7 +233,7 @@ exit();
                 </div>
             <?php endif; ?>
             
-            <form method="POST" action="">
+            <form method="POST" action="" enctype="multipart/form-data">
                 <div class="form-group">
                     <label><i class="fas fa-heading"></i> عنوان الكتاب</label>
                     <input type="text" name="title" required placeholder="مثال: أسس البرمجة">
@@ -239,10 +263,12 @@ exit();
                     <label><i class="fas fa-calendar"></i> سنة النشر</label>
                     <input type="number" name="publish_year" placeholder="مثال: 2024">
                 </div>
-                
-                <div class="form-group">
-                    <label><i class="fas fa-image"></i> رابط الصورة</label>
-                    <input type="url" name="image" placeholder="https://example.com/image.jpg">
+               <div class="form-group">
+                    <label><i class="fas fa-image"></i> صورة الكتاب</label>
+                    <input type="file" name="image" accept="image/jpeg,image/png,image/gif,image/webp">
+                    <small style="color: #718096; display: block; margin-top: 5px;">
+                        الصور المدعومة: JPG, PNG, GIF, WEBP
+                    </small>
                 </div>
                 
                 <div class="btn-group">
